@@ -3,14 +3,21 @@ import { CustomerRiderApp } from './apps/customer-rider/CustomerRiderApp';
 import { SuperAdminApp } from './apps/super-admin/SuperAdminApp';
 import { restoreAuthenticatedUser } from './services/supabaseClient';
 import { store } from './services/store';
+import AuthCallback from './pages/AuthCallback';
+import ResetPassword from './pages/ResetPassword';
 
 export default function App() {
+  const getPath = () => typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '/';
+  
   const isSuperAdminRoute = (): boolean => {
     if (typeof window === 'undefined') return false;
     const path = window.location.pathname.toLowerCase();
     const hash = window.location.hash.toLowerCase();
     return path.startsWith('/admin') || path === '/admin.html' || hash === '#admin';
   };
+
+  const isAuthCallback = getPath().startsWith('/auth/callback');
+  const isResetPassword = getPath().startsWith('/reset-password');
 
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(isSuperAdminRoute());
   const [startupProgress, setStartupProgress] = useState(0);
@@ -29,13 +36,17 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    // Skip splash for auth pages
+    if (isAuthCallback || isResetPassword) {
+      setStartupComplete(true);
+      return;
+    }
     let alive = true;
     const startedAt = Date.now();
     const timer = window.setInterval(() => {
       if (!alive) return;
       setStartupProgress(Math.min(100, Math.round(((Date.now() - startedAt) / 20000) * 100)));
     }, 100);
-    // Keep the branded splash visible for at least 20 seconds and until session restoration completes.
     const minimumDelay = new Promise<void>(resolve => window.setTimeout(resolve, 20000));
     const authRestore = restoreAuthenticatedUser().then(user => {
       if (!alive) return;
@@ -67,7 +78,13 @@ export default function App() {
     setIsAdminRoute(false);
   };
 
-  // Requested branded 20-second startup/loading experience.
+  if (isAuthCallback) {
+    return <AuthCallback />;
+  }
+  if (isResetPassword) {
+    return <ResetPassword />;
+  }
+
   if (!startupComplete) {
     return <div className="kitnova-splash" role="status" aria-live="polite">
       <img src="/icon-512.png" alt="KITNOVA" className="kitnova-splash-logo" />
@@ -79,7 +96,6 @@ export default function App() {
     </div>;
   }
 
-  // Dedicated separate application entry points (Zero permanent top switcher tabs)
   if (isAdminRoute) {
     return <SuperAdminApp onSwitchToCustomerApp={navigateToCustomer} />;
   }
