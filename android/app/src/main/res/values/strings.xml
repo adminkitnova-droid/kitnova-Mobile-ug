@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">KITNOVA Jersey</string>
+    <string name="title_activity_main">KITNOVA Jersey</string>
+    <string name="package_name">com.kitnova.jersey</string>
+    <string name="custom_url_scheme">com.kitnova.jersey</string>
+</resources>

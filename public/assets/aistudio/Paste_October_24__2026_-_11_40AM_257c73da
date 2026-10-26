@@ -1,0 +1,2092 @@
+ PROJECT: KITNOVA JERSEY BY VISHCOM TECH COMPANY UG
+
+MASTER DIRECTIVE
+
+Act as a senior software architect, React and TypeScript engineer, Supabase security engineer, e-commerce developer, 2D/3D customization engineer, mobile application developer, and production QA engineer.
+
+I am providing my EXISTING KITNOVA Jersey application.
+
+Your task is to inspect, improve, complete, test, and prepare this project for production.
+
+Do not start from scratch unless a specific part of the existing architecture is fundamentally unsuitable.
+
+Do not replace working components simply because you prefer a different implementation.
+
+Do not return only a plan, design, screenshot, or demonstration.
+
+Implement actual improvements in the source code, connect real backend operations, preserve existing features, and verify the results.
+
+The existing project uses React, TypeScript, Vite, Supabase, Cloudinary, and Three.js.
+
+Preserve this stack unless a technical reason requires a documented change.
+
+The application must be suitable for deployment as a real business platform serving customers, delivery riders, and administrators.
+
+==================================================
+
+BRANDING AND DESIGN SYSTEM ==================================================
+
+Brand: KITNOVA JERSEY
+
+Company: VISHCOM TECH COMPANY UG
+
+Brand positioning: Premium sports jerseys, customized football kits, and personalized teamwear.
+
+Use the existing brand identity.
+
+Primary navy: #0F2A5F
+
+Dark navy: #0A1A3C
+
+Primary gold: #D4A029
+
+Dark gold: #B3831B
+
+Light gold: #F0C760
+
+White: #FFFFFF
+
+Design requirements:
+
+Professional sports-commerce appearance.
+
+Premium navy-and-gold branding.
+
+Consistent buttons, forms, cards, dialogs, and navigation.
+
+Clear visual hierarchy.
+
+Responsive layouts for Android phones, tablets, and desktop browsers.
+
+Accessible text contrast and readable font sizes.
+
+Consistent spacing and iconography.
+
+Proper loading, success, empty, error, and offline states.
+
+Touch-friendly controls on mobile devices.
+
+Smooth transitions without excessive animation.
+
+No overlapping text, clipped buttons, or horizontal overflow.
+
+No placeholder links that lead nowhere.
+
+No fake charts or invented business statistics.
+
+No unnecessary redesign of components that already work well.
+
+Keep the existing KITNOVA logo and assets unless they have a genuine technical or design problem.
+
+================================================== 2. REQUIRED APPLICATION ARCHITECTURE
+
+Deliver two separate applications sharing one authoritative backend.
+
+APPLICATION A: KITNOVA CUSTOMER & RIDER APP.
+
+APPLICATION B: KITNOVA SUPER ADMIN.
+
+Application A serves customers and authorized riders.
+
+Application B serves authorized administrators.
+
+Use the existing project entry points where appropriate:
+
+index.html
+
+admin.html
+
+src/main.tsx
+
+src/admin.tsx
+
+src/apps/customer-rider/
+
+src/apps/super-admin/
+
+Inspect the current Vite configuration and implement independent build targets and deployment outputs for the two applications.
+
+Each application must be independently buildable and deployable.
+
+Use appropriate application identities, configuration, routing, and authentication initialization.
+
+Do not assume that separate HTML files alone provide security.
+
+Both applications must use the same authoritative Supabase business data while enforcing distinct permissions.
+
+Do not create separate conflicting product, order, payment, or inventory databases.
+
+Do not introduce a hidden admin button into the customer application as a substitute for application separation.
+
+The Super Admin entry point may be reachable through a private deployment URL, but its backend must reject unauthorized users regardless of how they access it.
+
+Preserve the existing customer/rider functionality throughout the separation.
+
+================================================== 3. AUTHENTICATION — FIX BEFORE OTHER FEATURES
+
+Inspect all authentication code, especially:
+
+src/services/supabaseClient.ts
+
+CustomerAuthScreen.tsx
+
+SuperAdminAuthScreen.tsx
+
+Authentication context or session provider.
+
+Application route guards.
+
+User profile and role-loading functions.
+
+Remove all simulated authentication that can report a successful login without a valid Supabase Auth session.
+
+Specifically:
+
+Remove arbitrary-email login fallbacks.
+
+Remove locally simulated administrator login.
+
+Remove fake authentication tokens.
+
+Remove hardcoded production credentials.
+
+Remove role assignment based solely on an email address.
+
+Do not treat localStorage as proof of identity.
+
+Do not automatically create a customer session when the Supabase server rejects authentication.
+
+Do not grant administrator privileges through frontend state.
+
+Use Supabase Authentication as the identity provider.
+
+Configure persistent sessions and token refresh correctly.
+
+Restore the current session when the application starts.
+
+Wait for authentication initialization before rendering protected routes.
+
+Handle expired sessions, invalid credentials, network failures, and disabled accounts properly.
+
+If authentication cannot be verified, do not grant access.
+
+Customer authentication
+
+Provide:
+
+Customer registration.
+
+Sign in.
+
+Sign out.
+
+Forgot password.
+
+Password reset.
+
+Session restoration.
+
+Profile editing.
+
+Appropriate validation and error messages.
+
+Public registration must create customer accounts only.
+
+Rider authentication
+
+Rider accounts must be provisioned or authorized through a protected workflow.
+
+A customer must not become a rider simply by changing a profile field.
+
+Super Admin authentication
+
+Provide a dedicated administrative login.
+
+Do not provide public Super Admin registration.
+
+Use trusted backend authorization to verify administrative privileges.
+
+Never store or expose administrator passwords in source code.
+
+Never use a predefined email address as sufficient proof of administrative authority.
+
+When an administrator is unauthorized, suspended, or missing the required role, deny access.
+
+================================================== 4. AUTHORIZATION AND ROLE MANAGEMENT
+
+Implement clear authorization for these roles:
+
+Customer.
+
+Rider.
+
+Super Admin.
+
+Operations Admin, if required.
+
+Product Admin, if required.
+
+Support Admin, if required.
+
+Super Admin receives all authorized business-administration privileges.
+
+Other administrator roles receive only explicitly assigned permissions.
+
+For example:
+
+Product Admin can manage products and inventory.
+
+Support Admin can manage permitted support cases.
+
+Operations Admin can manage assigned operational functions.
+
+Payment verification must require an explicitly authorized permission.
+
+Do not assume every administrator can perform every sensitive operation.
+
+Implement authorization on the backend, not only in the interface.
+
+Use Supabase Row Level Security and secure server-side functions.
+
+Prevent customers and riders from changing their own role.
+
+Protect administrative role assignments from direct unauthorized database updates.
+
+Do not trust role values supplied by the frontend.
+
+Test access through direct database requests and API calls, not only by inspecting the UI.
+
+================================================== 5. CUSTOMER APPLICATION
+
+Build upon the existing customer interface.
+
+Required customer navigation:
+
+Home.
+
+Shop.
+
+Studio.
+
+Cart.
+
+Orders.
+
+Notifications.
+
+Profile.
+
+Use a mobile-friendly bottom navigation where appropriate.
+
+Home
+
+Display actual content retrieved from Supabase:
+
+Promotional banners.
+
+Featured jerseys.
+
+Product categories.
+
+Popular products.
+
+Discounts.
+
+Announcements.
+
+Search.
+
+Relevant recommendations based on real available data.
+
+Allow Super Admin to manage homepage content.
+
+Shop
+
+Provide:
+
+Product search.
+
+Category filters.
+
+Size filters.
+
+Color filters.
+
+Price filters.
+
+Availability filters.
+
+Sorting.
+
+Product image galleries.
+
+Product details.
+
+Available variants.
+
+Current prices.
+
+Valid discounts.
+
+Customization availability.
+
+Add to Cart.
+
+Customize.
+
+Only display published and available products as purchasable.
+
+Show clear unavailable, low-stock, and out-of-stock states.
+
+Do not use hardcoded product arrays as the production catalog.
+
+Product details
+
+Display:
+
+Product name.
+
+Description.
+
+Primary image.
+
+Front and back images where available.
+
+Additional images.
+
+Size and color options.
+
+Variant availability.
+
+Base price.
+
+Valid discounts.
+
+Customization options.
+
+Applicable fees.
+
+Availability.
+
+Delivery information.
+
+Selecting a variant must update the displayed price, image, and availability where configured.
+
+Cart
+
+Implement a functional cart.
+
+Each cart item must preserve:
+
+Product ID.
+
+Variant ID.
+
+Selected size.
+
+Selected color.
+
+Quantity.
+
+Customization configuration.
+
+Uploaded asset references.
+
+Design identifier where applicable.
+
+Price snapshot for display.
+
+Relevant customization options.
+
+Display a real cart quantity badge.
+
+After Add to Cart, briefly show a visible success state such as "Added to Cart".
+
+Allow editing, quantity changes, and removal.
+
+Different jersey customizations must remain separate cart lines when their configurations differ.
+
+Persist the cart appropriately across sessions.
+
+Revalidate product availability, price, and stock before checkout.
+
+Never trust the client to determine the final payable amount.
+
+================================================== 6. JERSEY CUSTOMIZATION STUDIO — HIGH PRIORITY
+
+The existing Studio is a major part of KITNOVA.
+
+Preserve and improve:
+
+src/components/studio/StudioEditor.tsx
+
+src/components/studio/JerseyCanvas.tsx
+
+src/components/studio/Jersey3DPreview.tsx
+
+Do not replace these components with a static mockup unless an existing component is genuinely unusable.
+
+The Studio must be a functional editor.
+
+Exact product selection
+
+When a customer selects a jersey from Shop and taps Customize, open that exact product.
+
+Pass and preserve:
+
+productId.
+
+variantId.
+
+Selected size.
+
+Selected color.
+
+Product name.
+
+Current authorized product images.
+
+Base price.
+
+Available customization options.
+
+Do not open a generic jersey that ignores the selected product.
+
+Do not require the customer to select a different base jersey inside Studio.
+
+Editor layout
+
+Create a responsive customization workspace.
+
+On mobile, prioritize the jersey preview and use collapsible tool panels.
+
+On desktop, use a suitable editor layout with a canvas or preview area and side toolbar.
+
+Provide a visible front/back selector.
+
+Toolbar and sidebar
+
+Include functional tools for:
+
+Select.
+
+Add Text.
+
+Player Name.
+
+Player Number.
+
+Upload Logo.
+
+Upload Artwork.
+
+Choose Font.
+
+Text Color.
+
+Outline Color where supported.
+
+Resize.
+
+Rotate.
+
+Move.
+
+Duplicate.
+
+Delete.
+
+Undo.
+
+Redo.
+
+Layer Order.
+
+Hide Element.
+
+Lock Element.
+
+Reset permitted changes.
+
+Save Design.
+
+Preview.
+
+Add to Cart.
+
+Every displayed tool must work.
+
+Do not show decorative toolbar icons that have no action.
+
+Canvas behavior
+
+Support:
+
+Dragging elements.
+
+Moving elements.
+
+Resizing.
+
+Rotating.
+
+Selecting and deselecting.
+
+Layer ordering.
+
+Text editing.
+
+Element deletion.
+
+Undo and redo.
+
+Front and back designs.
+
+Save and reopen.
+
+Validate allowed placement areas and element limits according to administrator-configured rules.
+
+Front and back
+
+Store front and back customization independently.
+
+Switching sides must not erase the other side.
+
+The saved design must preserve both.
+
+Text customization
+
+Support:
+
+Player name.
+
+Player number.
+
+Custom text where permitted.
+
+Font selection.
+
+Font preview.
+
+Text color.
+
+Outline settings where supported.
+
+Alignment.
+
+Size.
+
+Position.
+
+Rotation.
+
+Apply the actual selected font in the preview.
+
+Validate name and number lengths using administrator-defined rules.
+
+Image customization
+
+Allow customers to upload logos and artwork from their device.
+
+Use the configured Cloudinary upload flow.
+
+Validate supported file types, file size, and upload status.
+
+Display upload progress.
+
+Keep local drafts recoverable when offline.
+
+Clearly distinguish a local-only image from an image confirmed as uploaded to Cloudinary.
+
+Do not report a failed remote upload as successful.
+
+2D and 3D consistency
+
+The 2D editor and 3D preview must use the same structured design model.
+
+Where the existing 3D renderer supports it, display the uploaded artwork, text, name, number, and placement on the correct jersey surface.
+
+Do not present an uncustomized 3D model as though it contains the customer's completed design.
+
+If a feature is not technically supported, report it honestly and implement the best compatible solution within the existing architecture.
+
+Saved designs
+
+Store:
+
+Design ID.
+
+Owner ID.
+
+Product ID.
+
+Variant ID.
+
+Size.
+
+Color.
+
+Front elements.
+
+Back elements.
+
+Text settings.
+
+Font settings.
+
+Asset references.
+
+Position and transform information.
+
+Preview image references where applicable.
+
+Pricing snapshot.
+
+Creation and update timestamps.
+
+Support saving, reopening, editing, and duplicating a design.
+
+Pricing
+
+Calculate displayed pricing using the current authorized rules:
+
+Product price
+
+applicable customization fees
+
+permitted additional options
+
+valid discounts.
+
+The backend must independently calculate and validate the final price during checkout.
+
+Do not accept a client-supplied final total as authoritative.
+
+Add to Cart
+
+Adding a customized jersey must preserve the complete configuration.
+
+Opening the cart must not lose the design.
+
+Editing an existing cart item should update that configuration.
+
+Duplicating a design should create a separate configurable item.
+
+The final order must preserve the exact product variant and approved design snapshot.
+
+================================================== 7. CLOUDINARY MEDIA MANAGEMENT
+
+Use the existing Cloudinary configuration already present in the project.
+
+Existing cloud name:
+
+podwfdgc
+
+Existing unsigned upload preset:
+
+Kitnova jersey uploads
+
+Existing folder:
+
+kitnova
+
+Verify the actual Cloudinary configuration and preset before deployment.
+
+Do not expose Cloudinary API secrets in frontend code.
+
+Implement reusable upload functionality for:
+
+Product main images.
+
+Product front images.
+
+Product back images.
+
+Product galleries.
+
+Home banners.
+
+Studio artwork.
+
+Logos.
+
+Customer profile images where required.
+
+Payment evidence.
+
+Proof-of-delivery photographs.
+
+Provide:
+
+File picker.
+
+Image preview.
+
+Upload progress.
+
+Validation.
+
+Error messages.
+
+Retry.
+
+Removal where permitted.
+
+Successful asset references.
+
+Store the resulting asset URLs and identifiers in the correct Supabase records.
+
+Do not require users to paste image URLs.
+
+If an upload fails, do not silently substitute a local Base64 value and claim the image was uploaded.
+
+Preserve unsynchronized local drafts where appropriate.
+
+Ensure assets are not accidentally deleted while still referenced by existing orders or saved designs.
+
+================================================== 8. SUPER ADMIN APPLICATION
+
+Use the existing Super Admin components and improve their actual functionality.
+
+Required navigation:
+
+Dashboard.
+
+Products.
+
+Product Images.
+
+Categories.
+
+Inventory.
+
+Jersey Studio Settings.
+
+Customers.
+
+Riders.
+
+Orders.
+
+Deliveries.
+
+Payments.
+
+Manual Payment Methods.
+
+Promotions.
+
+Homepage Management.
+
+Notifications.
+
+Customer Support.
+
+Analytics.
+
+Reports.
+
+Audit Logs.
+
+Administrator Management.
+
+Security.
+
+Settings.
+
+The administrative application must be independently buildable and deployable.
+
+Use a responsive sidebar, header, search, notification centre, account menu, and mobile navigation.
+
+Show real backend data.
+
+Do not create fake counts, fabricated revenue, or static charts that look live.
+
+Provide appropriate loading, empty, error, and retry states.
+
+Protect sensitive actions with confirmation and backend authorization.
+
+================================================== 9. SUPER ADMIN PRODUCT MANAGEMENT
+
+Implement real product management using Supabase.
+
+Authorized administrators must be able to:
+
+Add products.
+
+View products.
+
+Edit product details.
+
+Publish and unpublish products.
+
+Archive products.
+
+Safely delete eligible products.
+
+Manage categories.
+
+Manage sizes and colors.
+
+Manage variants.
+
+Update prices and discounts.
+
+Update stock.
+
+Configure customization availability.
+
+Configure featured status.
+
+Configure product display order.
+
+Upload and manage images.
+
+Use proper form validation.
+
+Prevent negative prices and invalid stock quantities.
+
+Use database transactions or secure server-side workflows where multiple records must change consistently.
+
+Do not destroy historical order information when products are archived.
+
+Product changes must be reflected in the customer application without rebuilding the mobile application.
+
+Use Supabase Realtime where appropriate, combined with refresh and cache invalidation.
+
+================================================== 10. INVENTORY MANAGEMENT
+
+Manage inventory at the appropriate product-variant level.
+
+Display:
+
+Product.
+
+SKU.
+
+Size.
+
+Color.
+
+Current stock.
+
+Reserved stock where supported.
+
+Available stock.
+
+Low-stock threshold.
+
+Inventory update history.
+
+Allow authorized adjustments with a reason.
+
+Prevent negative inventory and overselling.
+
+Use safe backend operations for stock reservation and release.
+
+Validate availability during order creation and checkout.
+
+Notify authorized administrators about low-stock and out-of-stock items.
+
+Ensure inventory remains consistent when orders are cancelled, rejected, or refunded where applicable.
+
+================================================== 11. MANUAL PAYMENT SYSTEM
+
+KITNOVA uses administrator-controlled manual payment instructions.
+
+Do not introduce automatic mobile-money integration unless separately requested.
+
+Super Admin must be able to:
+
+Add payment methods.
+
+Edit payment methods.
+
+Publish payment numbers.
+
+Edit account or merchant names.
+
+Change payment instructions.
+
+Set display order.
+
+Enable or disable payment methods.
+
+Review when methods were changed.
+
+Review who made the changes.
+
+The customer application must fetch current published instructions from Supabase.
+
+Do not hardcode payment numbers into the customer application.
+
+Customer payment submission
+
+Allow the customer to:
+
+View the order total.
+
+Select an enabled payment method.
+
+View the published instructions.
+
+Copy the payment number.
+
+Enter a transaction reference.
+
+Enter required payment details.
+
+Upload payment evidence.
+
+Submit the payment for review.
+
+View payment status.
+
+Store the submission and a snapshot of the payment instructions used.
+
+Payment states
+
+Use validated transitions such as:
+
+UNPAID → PAYMENT_SUBMITTED → PENDING_VERIFICATION → APPROVED
+
+Or:
+
+PENDING_VERIFICATION → REJECTED → RESUBMITTED, where permitted.
+
+Use the existing status model if it is sound, but keep the transitions consistent.
+
+Administrator review
+
+Display:
+
+Order.
+
+Customer.
+
+Amount due.
+
+Amount submitted.
+
+Payment method.
+
+Transaction reference.
+
+Submission time.
+
+Evidence.
+
+Status.
+
+Provide:
+
+Approve.
+
+Reject.
+
+Request Correction.
+
+Require a reason for rejection or correction.
+
+Only a properly authorized backend operation may approve payment.
+
+Do not approve payment automatically because an image was uploaded.
+
+Record the reviewer, timestamp, decision, and relevant audit information.
+
+Update the associated order through a consistent backend workflow.
+
+Notify the customer after the outcome.
+
+Never expose financial credentials or secret keys in frontend code.
+
+================================================== 12. ORDER MANAGEMENT
+
+Implement a complete order lifecycle.
+
+Use the existing status model where possible, but define permitted transitions clearly.
+
+Support appropriate states for:
+
+Pending checkout.
+
+Awaiting payment.
+
+Payment submitted.
+
+Payment verified.
+
+Confirmed.
+
+Preparing.
+
+Ready for dispatch.
+
+Assigned to rider.
+
+Out for delivery.
+
+Delivered.
+
+Cancelled.
+
+Failed delivery.
+
+Returned.
+
+Refunded, if refund processing is supported.
+
+Do not allow arbitrary status changes that violate business rules.
+
+Every order must preserve:
+
+Order number.
+
+Customer.
+
+Product items.
+
+Variant.
+
+Size.
+
+Color.
+
+Quantity.
+
+Design configuration.
+
+Price snapshot.
+
+Customization fees.
+
+Discounts.
+
+Delivery charges.
+
+Final amount.
+
+Payment status.
+
+Delivery status.
+
+Rider assignment.
+
+Timeline.
+
+Relevant notes and evidence.
+
+Display the exact customized design associated with the order.
+
+Do not change historical order pricing when a product price changes later.
+
+Use secure backend validation for checkout and order creation.
+
+================================================== 13. CUSTOMER ORDER EXPERIENCE
+
+Customers must be able to:
+
+View current orders.
+
+View past orders.
+
+View order details.
+
+View the design they submitted.
+
+View payment status.
+
+View delivery status.
+
+View relevant status timestamps.
+
+Receive order updates.
+
+Contact support.
+
+Request cancellation where permitted.
+
+Reorder eligible previous products.
+
+Recover saved designs where permitted.
+
+Do not show private information belonging to other customers.
+
+Make order status clear and understandable.
+
+Use real order records.
+
+================================================== 14. RIDER APPLICATION
+
+Use the existing rider application and services.
+
+Riders must be able to:
+
+Sign in.
+
+View assigned deliveries.
+
+Accept assignments where required.
+
+View authorized delivery information.
+
+View delivery instructions.
+
+Navigate to the delivery location.
+
+Update permitted delivery statuses.
+
+Contact the customer or support through authorized channels.
+
+Capture proof of delivery.
+
+Upload photographs or other permitted evidence.
+
+Add delivery notes.
+
+View completed and failed deliveries.
+
+Receive assignment notifications.
+
+Synchronize eligible changes when offline.
+
+Delivery statuses
+
+Use valid transitions such as:
+
+Assigned → Accepted → Picked Up → Out for Delivery → Delivered.
+
+Also support valid failure and return workflows.
+
+Validate status transitions on the backend.
+
+Do not let riders modify prices, payment verification, customer ownership, or administrator roles.
+
+Proof of delivery
+
+Store relevant fields:
+
+Delivery ID.
+
+Order ID.
+
+Rider ID.
+
+Delivery outcome.
+
+Timestamp.
+
+Recipient name where required.
+
+Signature where supported.
+
+Photograph reference where required.
+
+Notes.
+
+GPS information where authorized and available.
+
+Upload photographs using Cloudinary.
+
+If offline, retain the evidence securely for synchronization and show its pending state.
+
+Live location
+
+Request location permission appropriately.
+
+Collect location only for authorized active deliveries.
+
+Show actual coordinates and their last-update time.
+
+Do not fabricate GPS coordinates.
+
+Stop tracking when the authorized delivery-tracking period ends.
+
+Restrict access to customer-facing and administrative location views according to permissions.
+
+================================================== 15. OFFLINE MODE AND RELIABLE SYNCHRONIZATION
+
+Improve the existing offline functionality rather than removing it.
+
+Use appropriate browser storage and IndexedDB for durable offline data.
+
+Cache:
+
+Product catalog snapshots.
+
+Product images.
+
+Home-page content.
+
+Categories.
+
+The user's cart.
+
+Saved local designs.
+
+Relevant order information.
+
+Rider assignments.
+
+Pending delivery updates.
+
+Proof-of-delivery files awaiting upload.
+
+Cache only the information the user is authorized to access.
+
+When the device reconnects:
+
+Detect connectivity.
+
+Refresh authoritative server data.
+
+Upload pending assets.
+
+Process supported queued operations.
+
+Retry transient failures.
+
+Update synchronization indicators.
+
+Preserve user work after a failure.
+
+Use an idempotent synchronization strategy.
+
+Avoid duplicate orders, duplicate payment submissions, and duplicate delivery transitions.
+
+Keep offline queues scoped to the authenticated account.
+
+Do not synchronize one rider's queued data under another rider's account.
+
+Do not silently discard failed operations.
+
+Show clear states such as:
+
+Saved locally.
+
+Waiting to synchronize.
+
+Synchronizing.
+
+Synced.
+
+Failed; retry available.
+
+Do not claim a remote operation succeeded until the backend confirms it.
+
+================================================== 16. RIDER ASSIGNMENT AND DELIVERY MONITORING
+
+Super Admin must be able to assign a specific rider to a specific order.
+
+Record:
+
+Order ID.
+
+Rider ID.
+
+Assigned by.
+
+Assignment time.
+
+Current delivery status.
+
+Last status update.
+
+Proof-of-delivery status.
+
+Allow authorized reassignment.
+
+Record reassignment history.
+
+Ensure riders can access only authorized assignments.
+
+Show administrators active deliveries and last-known location updates where authorized.
+
+Indicate stale location data clearly.
+
+Provide filters for:
+
+Unassigned.
+
+Assigned.
+
+In progress.
+
+Delivered.
+
+Failed.
+
+Returned.
+
+Send appropriate notifications after assignments and relevant status changes.
+
+================================================== 17. NOTIFICATIONS AND FIREBASE
+
+Use Firebase Cloud Messaging for push notifications where configured.
+
+Use Supabase records for notification history and status.
+
+Support appropriate events:
+
+New order.
+
+Payment submitted.
+
+Payment approved.
+
+Payment rejected.
+
+Rider assigned.
+
+Delivery status changed.
+
+Delivery completed.
+
+Delivery failed.
+
+Low inventory.
+
+New support message.
+
+Relevant promotional announcements.
+
+Store device tokens securely and associate them with authenticated users.
+
+Handle token refresh and invalid tokens.
+
+Use backend-controlled notification delivery.
+
+Validate notification recipients.
+
+Do not let a customer send arbitrary privileged notifications.
+
+Provide read/unread states.
+
+Use deep links to open the relevant order, delivery, or support screen after authorization.
+
+Request Android notification permission where required.
+
+Handle foreground, background, and notification-tap behavior appropriately.
+
+Do not claim push notifications are operational until the configuration and delivery flow have been tested.
+
+================================================== 18. CUSTOMER SUPPORT
+
+Complete the existing support interface if present.
+
+Allow customers to:
+
+Open support requests.
+
+View their own requests.
+
+Send messages where supported.
+
+Attach permitted images.
+
+View responses.
+
+Track support status.
+
+Allow authorized administrators to:
+
+View permitted support requests.
+
+Assign support cases.
+
+Respond.
+
+Change status.
+
+Record relevant internal notes.
+
+Prevent customers from reading other customers' support conversations.
+
+Use real backend persistence.
+
+Do not simulate message delivery.
+
+================================================== 19. PROMOTIONS AND COUPONS
+
+Allow authorized administrators to manage:
+
+Promotional banners.
+
+Featured products.
+
+Discount campaigns.
+
+Coupons.
+
+Start and end dates.
+
+Usage limits.
+
+Eligible products.
+
+Eligible customer groups where supported.
+
+Minimum order values.
+
+Active/inactive status.
+
+Validate discounts on the backend.
+
+Prevent invalid, expired, or unauthorized discounts.
+
+Recalculate discounts at checkout.
+
+Ensure historical orders preserve the discount actually applied.
+
+================================================== 20. DELIVERY FEES AND SERVICE AREAS
+
+Create or complete administrator settings for:
+
+Delivery zones.
+
+Delivery fees.
+
+Free-delivery thresholds where applicable.
+
+Estimated delivery windows.
+
+Delivery restrictions.
+
+Service availability.
+
+Use the actual configured business rules.
+
+Do not invent live delivery charges or present unconfigured values as official.
+
+Validate the delivery fee on the backend during checkout.
+
+Preserve the fee snapshot on the order.
+
+================================================== 21. ADMINISTRATOR DASHBOARD AND ANALYTICS
+
+Use real Supabase data.
+
+Display:
+
+Total orders.
+
+Orders by status.
+
+Pending payment submissions.
+
+Approved payments.
+
+Revenue based on clearly defined qualifying transactions.
+
+Available products.
+
+Low-stock products.
+
+Customers.
+
+Active riders.
+
+Active deliveries.
+
+Completed deliveries.
+
+Failed deliveries.
+
+Support relevant date filters.
+
+Provide charts for:
+
+Orders over time.
+
+Revenue over time.
+
+Product performance.
+
+Payment statuses.
+
+Inventory levels.
+
+Rider performance.
+
+Delivery completion.
+
+Do not count pending payments as confirmed revenue.
+
+Do not use seeded random data for production analytics.
+
+Provide clear empty states when records are unavailable.
+
+Use pagination and efficient queries for large datasets.
+
+Restrict sensitive financial reports to authorized roles.
+
+================================================== 22. SEARCH AND FILTERS
+
+Implement useful search across the appropriate administrative modules.
+
+Support search by:
+
+Order number.
+
+Customer name.
+
+Customer email where authorized.
+
+Product name.
+
+SKU.
+
+Rider.
+
+Payment reference.
+
+Support ticket.
+
+Use pagination.
+
+Provide filters and sorting.
+
+Do not load unlimited records into the browser.
+
+Enforce permissions on the underlying queries.
+
+================================================== 23. AUDIT LOGS
+
+Create or complete a protected audit-log system.
+
+Record important events such as:
+
+Product created or edited.
+
+Product archived or deleted.
+
+Price changed.
+
+Inventory adjusted.
+
+Payment method changed.
+
+Payment approved or rejected.
+
+Order status changed.
+
+Rider assignment changed.
+
+Customer account suspended.
+
+Administrator role changed.
+
+Sensitive configuration updated.
+
+Store relevant information such as:
+
+Actor ID.
+
+Actor role.
+
+Action.
+
+Entity type.
+
+Entity ID.
+
+Timestamp.
+
+Appropriate before/after metadata.
+
+Reason where required.
+
+Do not store passwords, secret keys, or unnecessary sensitive data in audit logs.
+
+Prevent ordinary users from modifying or deleting audit records.
+
+Use backend-controlled audit creation for sensitive actions.
+
+================================================== 24. SECURITY SETTINGS
+
+Review all security-sensitive flows.
+
+Implement:
+
+Strict Row Level Security.
+
+Backend authorization.
+
+Secure administrator provisioning.
+
+Safe session restoration.
+
+Session expiry handling.
+
+Password recovery.
+
+Appropriate rate limiting.
+
+Input validation.
+
+Safe file uploads.
+
+Protected payment verification.
+
+Role-change protection.
+
+Audit logs.
+
+Sensitive-action confirmation.
+
+Least-privilege permissions.
+
+Safe error messages.
+
+Protection against cross-account data leakage.
+
+Never expose:
+
+Supabase service-role keys.
+
+Private Firebase service-account credentials.
+
+Cloudinary API secrets.
+
+Payment gateway secrets.
+
+Other backend secrets.
+
+Frontend configuration may contain only the credentials explicitly designed to be public.
+
+Do not use a frontend-only check as the sole security barrier.
+
+================================================== 25. DATABASE AND EDGE FUNCTIONS
+
+Inspect the actual existing Supabase schema before modifying it.
+
+Review existing migrations and deployed functionality where access is available.
+
+Do not assume that a local SQL file matches the live database.
+
+Reuse suitable existing tables.
+
+Create versioned migrations only where necessary.
+
+Review:
+
+Profiles and roles.
+
+Products.
+
+Product variants.
+
+Product images.
+
+Inventory.
+
+Saved designs.
+
+Orders and order items.
+
+Payment methods.
+
+Payment submissions.
+
+Rider assignments.
+
+Delivery events.
+
+Proof of delivery.
+
+Notifications.
+
+Support.
+
+Audit logs.
+
+Implement secure server-side operations where necessary for:
+
+Checkout.
+
+Price calculation.
+
+Stock reservation.
+
+Payment approval.
+
+Order-state transitions.
+
+Rider assignment.
+
+Privileged account management.
+
+Notification delivery.
+
+Audit logging.
+
+Validate all sensitive operations.
+
+Use database transactions or other appropriate consistency controls where multiple records must be updated together.
+
+Do not place service-role credentials in the frontend.
+
+Do not apply destructive database changes without reviewing their impact.
+
+================================================== 26. USER EXPERIENCE AND ERROR HANDLING
+
+Every major screen must support:
+
+Initial loading.
+
+Empty state.
+
+Successful operation.
+
+Validation failure.
+
+Network failure.
+
+Permission denied.
+
+Expired session.
+
+Retry.
+
+Offline state where relevant.
+
+Use skeleton loading where appropriate.
+
+Prevent endless spinners.
+
+Do not display success messages before a server operation succeeds.
+
+Show helpful messages without exposing sensitive backend errors.
+
+Preserve unsaved user work when safe.
+
+================================================== 27. LEGAL AND BUSINESS INFORMATION
+
+Provide configurable pages for:
+
+Privacy Policy.
+
+Terms and Conditions.
+
+Refund and Cancellation Policy.
+
+Delivery Policy.
+
+Customization Policy.
+
+Contact Information.
+
+Allow authorized administrators to manage appropriate business content.
+
+Do not invent legal approval or claim that policies have been reviewed by a lawyer.
+
+Ensure that applicable policies are accessible before checkout.
+
+Require clear customer acknowledgement where the business workflow or applicable law requires it.
+
+================================================== 28. APP SETTINGS AND MAINTENANCE
+
+Create appropriate administrator settings for:
+
+Business contact information.
+
+Currency.
+
+Delivery configuration.
+
+Product display.
+
+Customization rules.
+
+Payment instructions.
+
+Notification preferences.
+
+Maintenance mode.
+
+Minimum supported app version where applicable.
+
+Customer-facing announcements.
+
+Use UGX as the default currency only where consistent with the business's configured currency.
+
+Format prices consistently.
+
+Do not hardcode business-critical values in multiple unrelated components.
+
+Use validated central configuration.
+
+Do not allow ordinary administrators to modify security-critical configuration without the required permission.
+
+================================================== 29. PERFORMANCE AND RELIABILITY
+
+Improve performance without breaking functionality.
+
+Use:
+
+Pagination.
+
+Efficient Supabase queries.
+
+Appropriate indexes.
+
+Image optimization.
+
+Lazy loading.
+
+Cache invalidation.
+
+Realtime subscriptions where useful.
+
+Subscription cleanup.
+
+Request cancellation where appropriate.
+
+Error boundaries.
+
+Reusable components.
+
+Type-safe data models.
+
+Avoid unnecessary repeated queries.
+
+Do not store large binary images in localStorage.
+
+Do not leave subscriptions running after screens unmount.
+
+Handle interrupted network requests.
+
+Prevent duplicate submissions caused by repeated button taps.
+
+Ensure that the application remains usable on common Android phones and slower network connections.
+
+================================================== 30. TESTING REQUIREMENTS
+
+Inspect the current package scripts and available test framework.
+
+Run the checks that the project actually supports.
+
+At minimum, verify the following workflows.
+
+AUTHENTICATION:
+
+A valid customer can sign in.
+
+Invalid credentials are rejected.
+
+Failed Supabase authentication does not create a local fake session.
+
+Sessions restore correctly.
+
+Public registration cannot create an administrator.
+
+Unauthorized users cannot access protected routes.
+
+An unauthorized account cannot gain privileges by editing local storage.
+
+PRODUCTS:
+
+Super Admin can create and edit products.
+
+Product images upload successfully.
+
+Product changes appear in the customer app.
+
+Prices and stock are validated by the backend.
+
+Archived products do not break historical orders.
+
+STUDIO:
+
+The exact selected product opens in Studio.
+
+Size and color are preserved.
+
+Front and back designs remain independent.
+
+Uploaded artwork is handled correctly.
+
+Saved designs reopen correctly.
+
+The 2D and 3D views preserve the same design.
+
+Cart items preserve complete customization.
+
+Checkout recalculates the authoritative price.
+
+PAYMENTS:
+
+Customers can submit payment evidence.
+
+Submission does not automatically approve payment.
+
+Unauthorized users cannot approve payment.
+
+Authorized review records the reviewer and timestamp.
+
+Order and payment states remain consistent.
+
+RIDERS:
+
+Riders see only assigned deliveries.
+
+Unauthorized order changes are rejected.
+
+Proof of delivery persists.
+
+Offline updates survive app restart.
+
+Synchronization does not duplicate completed operations.
+
+ADMINISTRATION:
+
+Super Admin can manage products and images.
+
+Unauthorized staff permissions are rejected.
+
+Administrative actions produce audit records.
+
+Dashboard metrics reflect actual backend records.
+
+BUILDS:
+
+The customer/rider application builds successfully.
+
+The Super Admin application builds successfully.
+
+Both applications can be deployed independently using the documented configuration.
+
+Do not claim a test passed unless it was actually run.
+
+Clearly distinguish unit tests, integration tests, security tests, and manual tests.
+
+================================================== 31. DEPLOYMENT PREPARATION
+
+Prepare separate deployment configurations for:
+
+A. KITNOVA Customer & Rider application.
+
+B. KITNOVA Super Admin application.
+
+Keep the existing Supabase project unless a documented technical reason requires a change.
+
+Document:
+
+Build commands.
+
+Required environment variables.
+
+Public frontend configuration.
+
+Server-side secrets.
+
+Supabase migrations.
+
+Edge Function deployment.
+
+Cloudinary configuration.
+
+Firebase configuration.
+
+Application URLs.
+
+Redirect URLs.
+
+Authentication settings.
+
+Production build outputs.
+
+Deployment and rollback procedure.
+
+Do not expose secret environment variables in frontend bundles.
+
+Do not claim that an APK or production deployment exists unless it has actually been built or deployed.
+
+================================================== 32. REQUIRED FINAL REPORT
+
+After completing the work, provide a concise but accurate report containing:
+
+Existing features retained.
+
+Features completed.
+
+Source files changed.
+
+Authentication fixes.
+
+Application separation changes.
+
+Supabase integration changes.
+
+Database migrations created.
+
+Security policies implemented.
+
+Cloudinary integration results.
+
+Firebase notification results.
+
+Studio workflow results.
+
+Payment workflow results.
+
+Rider workflow results.
+
+Build results for both applications.
+
+Tests actually executed.
+
+Failed tests.
+
+Remaining mock or local-only features.
+
+Remaining production blockers.
+
+Exact next steps for deployment.
+
+Do not invent success.
+
+Do not claim live database integration unless verified.
+
+Do not report a feature as complete merely because its screen exists.
+
+================================================== 33. IMPLEMENTATION ORDER
+
+Implement in this order:
+
+PHASE 1: Audit existing source and preserve a backup.
+
+PHASE 2: Fix authentication and authorization.
+
+PHASE 3: Separate the customer/rider and Super Admin builds.
+
+PHASE 4: Correct Supabase data persistence and RLS.
+
+PHASE 5: Complete products, images, variants, and inventory.
+
+PHASE 6: Complete the Studio-to-cart-to-order workflow.
+
+PHASE 7: Complete manual payments and protected verification.
+
+PHASE 8: Complete rider assignments, delivery tracking, and proof of delivery.
+
+PHASE 9: Complete notifications, analytics, audit logs, and settings.
+
+PHASE 10: Verify offline synchronization and error handling.
+
+PHASE 11: Build, test, document, and prepare deployment.
+
+After each phase, run the relevant checks before proceeding.
+
+Do not overwrite working features with untested replacements.
+
+If the entire project cannot safely be completed in one session, finish the highest-priority phase, report the exact remaining work, and continue from the current source state.
+
+FINAL DIRECTIVE:
+
+Make the existing KITNOVA project a real, secure, connected, production-ready commerce platform.
+
+Prioritize correctness, security, data integrity, and working business workflows over adding decorative screens.
+
+The final system must have two separate applications, a shared authoritative Supabase backend, functional jersey customization, administrator-controlled products and images, manual payment verification, secure rider assignments, reliable order management, and properly tested production builds.
+
